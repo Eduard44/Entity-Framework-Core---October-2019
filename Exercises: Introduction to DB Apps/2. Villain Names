@@ -1,0 +1,51 @@
+using System;
+using System.Data.SqlClient;
+
+namespace VillainNames
+{
+    class Program
+    {
+        private static string connectionString =
+            "Server=DESKTOP-5P3B9KG\\SQLEXPRESS;" +
+            "Database=MinionsDB;" +
+            "Integrated Security=true";
+
+        private const string DB_NAME = "MinionsDB";
+
+        static void Main(string[] args)
+        {
+            SqlConnection connection = new SqlConnection
+                (connectionString);
+            connection.Open();
+            using (connection)
+            {
+
+                string queryText =
+                @"USE MinionsDB
+                SELECT v.Name, COUNT(mv.VillainId) AS MinionsCount  
+                FROM Villains AS v 
+                JOIN MinionsVillains AS mv ON v.Id = mv.VillainId 
+                GROUP BY v.Id, v.Name 
+                HAVING COUNT(mv.VillainId) > 3 
+                ORDER BY COUNT(mv.VillainId)";
+
+                SqlCommand selectCmd = new SqlCommand(queryText, connection);
+
+                try
+                {
+                    SqlDataReader reader = new SqlCommand(queryText, connection).ExecuteReader();
+                    while (reader.Read())
+                    {
+                        Console.WriteLine((string)reader["Name"] + " - " + (int)reader["MinionsCount"]);
+                    }
+                    Console.WriteLine("Success!");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Failure!");
+                    Console.WriteLine(e.Message);
+                }
+            }
+        }
+    }
+}
