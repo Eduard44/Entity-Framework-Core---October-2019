@@ -1,7 +1,7 @@
 using System;
 using System.Data.SqlClient;
 
-namespace VillainNames
+namespace _2._Villain_Names
 {
     class Program
     {
@@ -34,9 +34,12 @@ namespace VillainNames
                 try
                 {
                     SqlDataReader reader = new SqlCommand(queryText, connection).ExecuteReader();
-                    while (reader.Read())
+                    using (reader)
                     {
-                        Console.WriteLine((string)reader["Name"] + " - " + (int)reader["MinionsCount"]);
+                        while (reader.Read())
+                        {
+                            Console.WriteLine((string)reader["Name"] + " - " + (int)reader["MinionsCount"]);
+                        }
                     }
                     Console.WriteLine("Success!");
                 }
